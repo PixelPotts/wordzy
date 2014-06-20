@@ -2,18 +2,41 @@
 <head>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/main.css">
-    <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+    <link rel="stylesheet" href="css/wordzy.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
-    <script src="js/definitions.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/underscore_string.js"></script>
+    <script src="js/objects.js"></script>
+    <script src="js/trie.js"></script>
+    <script src="js/wordzy.js"></script>
 </head>
 
 <body>
 
-
 <div class="container">
+
+    <h1>Wordzy: Impossible.</h1>
+
+    <div id="in-play-container">
+        <div id="word-container">
+            <!-- ko foreach: letters -->
+            <span data-bind="text: $data"></span>
+            <!-- /ko -->
+        </div>
+
+        <div id="guess-box">
+            <p>Time: <span data-bind="text: timer"></span></p>
+            <input id='guess-input' type="text">
+            <div id="points">Points: <span data-bind="text: points"></span></div>
+            <div id="correct-words" data-bind="foreach: correctWords">
+                <div data-bind="text: $data"></div>
+            </div>
+        </div>
+    </div>
+    <div id="start-screen">
+        <button id="game-start">Start</button>
+    </div>
 
 </div>

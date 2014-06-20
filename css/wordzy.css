@@ -1,0 +1,21 @@
+#word-container {
+    font-size: 150px;
+    text-align: center;
+}
+#guess-box {
+    text-align: center;
+    margin-top: 20px;
+}
+#correct-words {
+
+}
+#in-play-container {
+    display: none;
+}
+#start-screen {
+
+}
+#points {
+    font-weight: bold;
+    margin: 10px 0;
+}
