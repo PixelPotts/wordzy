@@ -6,7 +6,7 @@
  *
  */
 
-var CLOCK_START = 1; // master game clock starting time
+var CLOCK_START = 5; // master game clock starting time
 var NEW_LETTERS_CLOCK = 5; // new word clock starting time; also when
 var TIME_PER_TURN = 1000; //ms
 
