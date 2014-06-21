@@ -4,7 +4,7 @@
 }
 #guess-box {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 #correct-words {
 
@@ -29,4 +29,25 @@ h5 {
     display: none;
     text-align: center;
     padding: 100px;
+}
+#reset-btn {
+    display: none;
+}
+#game-start, #btn-scared {
+    display: none;
+}
+#new-word-clock {
+    margin-top: 40px;
+    margin-bottom: -20px;
+}
+#success-stamp {
+    margin-left: 10px;
+    display: none;
+}
+#guess-input-wrap {
+    margin-left: 0px;
+}
+#fb-like {
+    display: block;
+    margin-left: 200px;
 }

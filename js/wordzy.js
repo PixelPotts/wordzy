@@ -6,21 +6,31 @@
  *
  */
 
-var CLOCK_START = 5;
+var CLOCK_START = 1; // master game clock starting time
+var NEW_LETTERS_CLOCK = 5; // new word clock starting time; also when
+var TIME_PER_TURN = 1000; //ms
+
 var NUM_VOWELS = 2;
 var NUM_LETTERS = 7;
-var TIME_PER_TURN = 6000;
-var SECOND_HAND = 1300;
+var BONUS_WORD_LEN = 4;
+var BONUS_TIME_ADD = 2;
+var PTS_FOR_WORD = 1;
+var TIME_FOR_WORD = 2;
 
 var mainIntervalId, timerIntervalId;
 
 function WordzyViewModel(){
   var self = this;
 
+  // observables
   self.letters = ko.observableArray(this.pickLetters(7));
   self.correctWords = ko.observableArray();
-  self.timer = ko.observable(CLOCK_START);
+  self.correctWordsFull = ko.observableArray();
   self.points = ko.observable(0);
+
+  // observable timers
+  self.gameClock = ko.observable(CLOCK_START);
+  self.newWordClock = ko.observable(NEW_LETTERS_CLOCK);
 
 }
 
@@ -32,35 +42,64 @@ $.extend(WordzyViewModel.prototype,{
     if(numVowels < NUM_VOWELS) this.pickLetters(num);
     return letters;
   },
-  changeLetters: function(){
-    $('#guess-input').val(null); // clear input state so user doesn't have to backspace
-    return this.letters(this.pickLetters(7));
+  checkChangeLetters: function(spaceBar){
+    if(this.newWordClock() < 1){
+      $('#guess-input').val(null); // clear input state so user doesn't have to backspace
+      this.letters(this.pickLetters(7));
+      this.newWordClock(NEW_LETTERS_CLOCK);
+      return true;
+    }
+
+    // user can press the spacebar to add time, at any point
+    if(spaceBar){
+      this.letters(this.pickLetters(7));
+      this.addTime(0-1);
+    }
+    return false;
   },
   attemptWord: function(word){
-    if(_.contains(this.correctWords(),word)) return false; // skip words already found
+
+    // The obvious failure conditions
+    if(_.contains(this.correctWordsFull(),word)) return false; // skip words already found
     if(_.size(word)===0) return false; // skip empty
     if( ! wordTrie.lookup(word)) return false; // skip non-real words
+
+    // Make sure the word is composed of this.letters()
     var wordLettersOverlap = _.intersection( _(word).chars(), this.letters() ).length;
     if(wordLettersOverlap == word.length){
       this.correctWords.unshift(word);
+      this.correctWordsFull.unshift(word);
+
       // only store up to n words
       if(_.size(this.correctWords()) >= NUM_LETTERS) this.correctWords.pop();
-      this.addTime(1);
-      this.addPoints(1);
+
+      // update the timers and points
+      this.addTime(TIME_FOR_WORD);
+      this.addPoints(PTS_FOR_WORD);
+
+      // show +1
+      $('#success-stamp').show();
+      $('#guess-input').css('margin-left',39);
+      setTimeout(function() {
+        $('#success-stamp').hide();
+        $('#guess-input').css('margin-left',0);
+      }, 200);
+
       return true;
-    } else {
-      return false;
     }
+    return false;
   },
   addTime: function(num){
-    this.timer(this.timer()+num);
+    this.gameClock(this.gameClock()+num);
+    this.newWordClock(this.newWordClock()+num);
   },
   subtractTime: function(num){
-    this.timer(this.timer()-num);
+    this.gameClock(this.gameClock()-num);
+    this.newWordClock(this.newWordClock()-num);
   },
   checkGameOver: function(){
-    console.log(this.timer());
-    if(this.timer()<1){
+    //console.log(this.gameClock());
+    if(this.gameClock()<1){
       return true;
     }
     return false;
@@ -81,15 +120,18 @@ $(document).ready(function() {
   _.mixin(_.str.exports());
   ko.applyBindings(wvm);
 
+  $('#game-start, #btn-scared').show();
+
   var gameOver = 0;
 
-  var framerate = TIME_PER_TURN; //ms
+  var framerate = TIME_PER_TURN;
   var mainloop = function() {
-    wvm.changeLetters();
+    console.log(wvm.newWordClock());
+    wvm.checkChangeLetters(false);
   };
 
   // another loop for the game timer functions
-  var timerRate = SECOND_HAND; //ms
+  var timerRate = 1000; // one second
   var timerLoop = function() {
     wvm.subtractTime(1);
     gameOver = wvm.checkGameOver();
@@ -101,7 +143,7 @@ $(document).ready(function() {
   $("#game-start, #reset-btn").click(function(){
     mainIntervalId = setInterval( mainloop, framerate );
     timerIntervalId = setInterval( timerLoop, timerRate );
-    wvm.timer(CLOCK_START);
+    wvm.gameClock(CLOCK_START);
     wvm.points(0);
     wvm.correctWords([]);
     $('#start-screen, #reset-screen').hide();
@@ -118,7 +160,7 @@ $(document).ready(function() {
   function resetGame(){
     $('#in-game-screen').hide();
     $('#reset-screen').show();
-    $('#reset-btn').focus().select();
+    $('#reset-btn').delay(1000).show();
   }
 
   /* Miscellany */
@@ -138,7 +180,7 @@ $(document).ready(function() {
   $(window).keypress(function(e) {
     if(e.which == 32) {
       e.preventDefault();
-      wvm.changeLetters();
+      wvm.checkChangeLetters(true);
       $GuessBox.val(null);
     }
   });

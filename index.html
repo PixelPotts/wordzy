@@ -16,6 +16,14 @@
 </head>
 
 <body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
 <p class="alert alert-info visible-xs visible-sm">Note: This game is not meant for small mobile phones.</p>
 
@@ -24,6 +32,7 @@
     <h1>Wordzy: Impossible.</h1>
 
     <div id="in-game-screen">
+        <!-- <p id="new-word-clock" style="text-align: center">New word in: <span data-bind="text: newWordClock"></span></p> -->
         <div id="word-container">
             <!-- ko foreach: letters -->
             <span data-bind="text: $data"></span>
@@ -31,8 +40,12 @@
         </div>
 
         <div id="guess-box">
-            <p>Time: <span data-bind="text: timer"></span></p>
-            <input id='guess-input' type="text">
+            <p>Time: <span data-bind="text: gameClock"></span></p>
+            <div id="guess-input-wrap">
+                <input id='guess-input' type="text">
+
+                <span id="success-stamp" class="label label-success">+1</span>
+            </div>
             <div id="points">Points: <span data-bind="text: points"></span></div>
             <div id="correct-words" data-bind="foreach: correctWords">
                 <div data-bind="text: $data"></div>
@@ -73,7 +86,12 @@
         <h3>Game Over</h3>
         <p>You scored <strong data-bind="text: points"></strong> points.</p>
         <br>
+
+
         <button id="reset-btn" class="btn btn-success">Try Again!</button>
+
+        <!-- <div class="fb-like" data-href="http://bryanpotts.com/wordzy/" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div> -->
+
     </div>
 
 </div>
