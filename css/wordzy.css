@@ -19,3 +19,9 @@
     font-weight: bold;
     margin: 10px 0;
 }
+h5 {
+    margin-top:23px;
+}
+#advanced-tips {
+    display: none;
+}

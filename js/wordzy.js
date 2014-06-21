@@ -18,6 +18,7 @@ $.extend(WordzyViewModel.prototype,{
     return letters;
   },
   changeLetters: function(){
+    $('#guess-input').val(null); // clear input state so user doesn't have to backspace
     return this.letters(this.pickLetters(7));
   },
   attemptWord: function(word){
@@ -76,7 +77,7 @@ $(document).ready(function() {
     wvm.subtractTime(1);
     gameOver = wvm.checkGameOver();
     if(gameOver){
-      console.log("Game Over!");
+      endGame();
     }
   };
 
@@ -88,6 +89,10 @@ $(document).ready(function() {
     $('#guess-input').focus().select();
   });
 
+  function endGame(){
+    clearInterval(mainloop);
+    clearInterval(timerLoop);
+  }
 
   var $GuessBox = $('#guess-box input');
 
@@ -101,5 +106,19 @@ $(document).ready(function() {
       $GuessBox.val(null);
     }
   });
+  $(window).keypress(function(e) {
+    if(e.which == 32) {
+      e.preventDefault();
+      wvm.changeLetters();
+      $GuessBox.val(null);
+    }
+  });
+
+  // Advanced tips toggle
+  $('#advanced-tips-toggle').click(function(){
+    $('#advanced-tips').show();
+    $(this).hide();
+  });
+
 
 });

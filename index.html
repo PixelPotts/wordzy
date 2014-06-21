@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/wordzy.css">
+    <link rel="image_src" href="images/logo.png" />
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
@@ -11,9 +12,12 @@
     <script src="js/objects.js"></script>
     <script src="js/trie.js"></script>
     <script src="js/wordzy.js"></script>
+    <title>Wordzy: Impossible.</title>
 </head>
 
 <body>
+
+<p class="alert alert-info visible-xs visible-sm">Note: This game is not meant for small mobile phones.</p>
 
 <div class="container">
 
@@ -36,7 +40,34 @@
         </div>
     </div>
     <div id="start-screen">
-        <button id="game-start">Start</button>
+        <div>
+            <p>Hi, thanks for checking out my game. I did this to practice Javascript and to torment people like <i>you</i>.<br> This game is designed to be hard even for experienced word game players. Here's how to play:</p>
+            <h5>Beginner Tips</h5>
+            <ul>
+                <li>Make words with the letters shown, as quickly as possible.</li>
+                <li>You start with five seconds on the clock; each correct word adds one second it.</li>
+                <li>You can press the space bar at any time to get new letters. Wow!</li>
+                <li>If you have feedback on this game and would like to share please
+                    <a href="pottspotts [at] gmail.com"
+                       rel="nofollow"
+                       onclick="this.href='mailto:' + 'pottspotts' + '@' + 'gmail.com'">email me</a>.
+                </li>
+            </ul>
+            <a id="advanced-tips-toggle" href="#">see advanced tips</a>
+        </div>
+        <div id="advanced-tips">
+            <h5>Advanced Tips</h5>
+            <ul>
+                <li>As you type a word like "doe", you will automatically get "do". Another example would be "hitter", giving points for "hi" and "hit" along the way.</li>
+                <li>You don't have to press enter to play a word, merely typing the word works. Press enter only if you want to clear anything you've typed</li>
+                <li>Note that whatever you've typed will be erased when new letters flash. Use this to your advantage and jump right into the next set.</li>
+            </ul>
+        </div>
+
+        <br>
+        <button id="game-start" class="btn btn-info btn-bigl">Play <span class="glyphicon glyphicon-play"></span></button>
+        &nbsp;
+        <button onclick="alert('Therapy only works when we have a genuine desire to know ourselves as we are. Not as we would like to be.')" class="btn btn-danger btn-xs">I'm scared!</button>
     </div>
 
 </div>
