@@ -10,7 +10,7 @@ var CLOCK_START = 5; // master game clock starting time
 var NEW_LETTERS_CLOCK = 5; // new word clock starting time; also when
 var TIME_PER_TURN = 1000; //ms
 
-var NUM_VOWELS = 2;
+var MIN_VOWELS = 2;
 var NUM_LETTERS = 7;
 var BONUS_WORD_LEN = 4;
 var BONUS_TIME_ADD = 2;
@@ -21,25 +21,27 @@ var mainIntervalId, timerIntervalId;
 
 function WordzyViewModel(){
   var self = this;
-
-  // observables
-  self.letters = ko.observableArray(this.pickLetters(7));
-  self.correctWords = ko.observableArray();
-  self.correctWordsFull = ko.observableArray();
-  self.points = ko.observable(0);
-
-  // observable timers
-  self.gameClock = ko.observable(CLOCK_START);
-  self.newWordClock = ko.observable(NEW_LETTERS_CLOCK);
-
+  self.init();
 }
 
 $.extend(WordzyViewModel.prototype,{
+  
+  init: function(){
+    // observables
+    this.letters = ko.observableArray(this.pickLetters(7));
+    this.correctWords = ko.observableArray();
+    this.correctWordsFull = ko.observableArray();
+    this.points = ko.observable(0);
 
+    // observable timers
+    this.gameClock = ko.observable(CLOCK_START);
+    this.newWordClock = ko.observable(NEW_LETTERS_CLOCK);
+    debugger;
+  },
   pickLetters: function(num){
     letters = _(Alphabet).sample(num);
     var numVowels = _.intersection( Vowels, letters ).length;
-    if(numVowels < NUM_VOWELS) this.pickLetters(num);
+    if(numVowels < MIN_VOWELS) this.pickLetters(num);
     return letters;
   },
   checkChangeLetters: function(spaceBar){
@@ -140,15 +142,32 @@ $(document).ready(function() {
     }
   };
 
-  $("#game-start, #reset-btn").click(function(){
+  $("#game-start").click(function(){
     mainIntervalId = setInterval( mainloop, framerate );
     timerIntervalId = setInterval( timerLoop, timerRate );
-    wvm.gameClock(CLOCK_START);
-    wvm.points(0);
-    wvm.correctWords([]);
+    
     $('#start-screen, #reset-screen').hide();
     $('#in-game-screen').show();
     $('#guess-input').focus().select();
+  });
+
+  $("#reset-btn").click(function(){
+    mainIntervalId = setInterval( mainloop, framerate );
+    timerIntervalId = setInterval( timerLoop, timerRate );
+
+    wvm.letters(wvm.pickLetters(7));
+    wvm.correctWords([]);
+    wvm.correctWordsFull([]);
+    wvm.points(0);
+
+    // observable timers
+    wvm.gameClock(CLOCK_START);
+    wvm.newWordClock(NEW_LETTERS_CLOCK);
+
+    $('#reset-screen').hide();
+    $('#in-game-screen').show();
+    $GuessBox.focus().select();
+    $GuessBox.val(null);
   });
 
   function endGame(){
@@ -158,6 +177,8 @@ $(document).ready(function() {
   }
 
   function resetGame(){
+    wvm.letters([]);
+    wvm.pickLetters(NUM_LETTERS);
     $('#in-game-screen').hide();
     $('#reset-screen').show();
     $('#reset-btn').delay(1000).show();
