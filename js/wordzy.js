@@ -1,10 +1,25 @@
 
+/*
+ * Wordzy: Impossible.
+ *
+ * @author Bryan Potts <pottspotts@gmail.com>
+ *
+ */
+
+var CLOCK_START = 5;
+var NUM_VOWELS = 2;
+var NUM_LETTERS = 7;
+var TIME_PER_TURN = 6000;
+var SECOND_HAND = 1300;
+
+var mainIntervalId, timerIntervalId;
+
 function WordzyViewModel(){
   var self = this;
 
   self.letters = ko.observableArray(this.pickLetters(7));
   self.correctWords = ko.observableArray();
-  self.timer = ko.observable(5);
+  self.timer = ko.observable(CLOCK_START);
   self.points = ko.observable(0);
 
 }
@@ -14,7 +29,7 @@ $.extend(WordzyViewModel.prototype,{
   pickLetters: function(num){
     letters = _(Alphabet).sample(num);
     var numVowels = _.intersection( Vowels, letters ).length;
-    if(numVowels < 2) this.pickLetters(num);
+    if(numVowels < NUM_VOWELS) this.pickLetters(num);
     return letters;
   },
   changeLetters: function(){
@@ -28,8 +43,8 @@ $.extend(WordzyViewModel.prototype,{
     var wordLettersOverlap = _.intersection( _(word).chars(), this.letters() ).length;
     if(wordLettersOverlap == word.length){
       this.correctWords.unshift(word);
-      // only store up to 7 words
-      if(_.size(this.correctWords()) >= 7) this.correctWords.pop();
+      // only store up to n words
+      if(_.size(this.correctWords()) >= NUM_LETTERS) this.correctWords.pop();
       this.addTime(1);
       this.addPoints(1);
       return true;
@@ -44,9 +59,11 @@ $.extend(WordzyViewModel.prototype,{
     this.timer(this.timer()-num);
   },
   checkGameOver: function(){
+    console.log(this.timer());
     if(this.timer()<1){
-      return 1;
+      return true;
     }
+    return false;
   },
   addPoints: function(pts){
     this.points(this.points()+pts);
@@ -66,13 +83,13 @@ $(document).ready(function() {
 
   var gameOver = 0;
 
-  var framerate = 6000; //ms
+  var framerate = TIME_PER_TURN; //ms
   var mainloop = function() {
     wvm.changeLetters();
   };
 
   // another loop for the game timer functions
-  var timerRate = 1300; //ms
+  var timerRate = SECOND_HAND; //ms
   var timerLoop = function() {
     wvm.subtractTime(1);
     gameOver = wvm.checkGameOver();
@@ -81,18 +98,30 @@ $(document).ready(function() {
     }
   };
 
-  $("#game-start").click(function(){
-    setInterval( mainloop, framerate );
-    setInterval( timerLoop, timerRate );
-    $('#start-screen').hide();
-    $('#in-play-container').show();
+  $("#game-start, #reset-btn").click(function(){
+    mainIntervalId = setInterval( mainloop, framerate );
+    timerIntervalId = setInterval( timerLoop, timerRate );
+    wvm.timer(CLOCK_START);
+    wvm.points(0);
+    wvm.correctWords([]);
+    $('#start-screen, #reset-screen').hide();
+    $('#in-game-screen').show();
     $('#guess-input').focus().select();
   });
 
   function endGame(){
-    clearInterval(mainloop);
-    clearInterval(timerLoop);
+    clearInterval(mainIntervalId);
+    clearInterval(timerIntervalId);
+    resetGame();
   }
+
+  function resetGame(){
+    $('#in-game-screen').hide();
+    $('#reset-screen').show();
+    $('#reset-btn').focus().select();
+  }
+
+  /* Miscellany */
 
   var $GuessBox = $('#guess-box input');
 
@@ -120,5 +149,10 @@ $(document).ready(function() {
     $(this).hide();
   });
 
+  // I'm scared! button
+  $('#btn-scared').click(function(){
+    alert('Therapy only works when we have a genuine desire to know ourselves as we are. Not as we would like to be.');
+    $(this).hide();
+  });
 
 });

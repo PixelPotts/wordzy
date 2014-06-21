@@ -9,7 +9,7 @@
 #correct-words {
 
 }
-#in-play-container {
+#in-game-screen {
     display: none;
 }
 #start-screen {
@@ -24,4 +24,9 @@ h5 {
 }
 #advanced-tips {
     display: none;
+}
+#reset-screen {
+    display: none;
+    text-align: center;
+    padding: 100px;
 }
