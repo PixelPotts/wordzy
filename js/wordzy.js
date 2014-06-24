@@ -6,7 +6,7 @@
  *
  */
 
-var CLOCK_START = 500; // master game clock starting time
+var CLOCK_START = 10; // master game clock starting time
 var NEW_LETTERS_CLOCK = 5; // new word clock starting time; also when
 var TIME_PER_TURN = 1000; //ms
 
@@ -16,6 +16,9 @@ var BONUS_WORD_LEN = 4;
 var BONUS_TIME_ADD = 2;
 var PTS_FOR_WORD = 1;
 var TIME_FOR_WORD = 2;
+
+var BAR_MULTIPLIER = 3;
+var BAR_START_COLOR = '#00DD00';
 
 var mainIntervalId, timerIntervalId;
 
@@ -32,7 +35,8 @@ $.extend(WordzyViewModel.prototype,{
     this.correctWords = ko.observableArray();
     this.correctWordsFull = ko.observableArray();
     this.points = ko.observable(0);
-    this.progressBarWidth = ko.observable('15px');
+    this.progressBarWidth = ko.observable(CLOCK_START * BAR_MULTIPLIER);
+    this.progressBarColor = ko.observable(BAR_START_COLOR);
 
     // observable timers
     this.gameClock = ko.observable(CLOCK_START);
@@ -46,18 +50,9 @@ $.extend(WordzyViewModel.prototype,{
     return letters;
   },
   pickLettersDistributed: function(num){
-    var letters = [];
-    while(letters.length < num){
-      var sum = 0;
-      _.each(AlphaDist, function(weight, letter){
-        sum += weight;
-        if(_.random(1,sum) < weight){
-          if( ! _.contains(letters, letter) && letters.length < num){
-            letters.push(letter);
-          }
-        }
-      });
-    }
+    var word = _(SevenLetterWords).sample(1);
+    console.log(word);
+    var letters = word[0].split("");
     return _.shuffle(letters);
   },
   checkChangeLetters: function(spaceBar){
@@ -111,23 +106,29 @@ $.extend(WordzyViewModel.prototype,{
   addTime: function(num){
     this.gameClock(this.gameClock()+num);
     this.newWordClock(this.newWordClock()+num);
-    //this.progressBarWidth(this.progressBarWidth() + ... );
-  },
-  subtractTime: function(num){
-    this.gameClock(this.gameClock()-num);
-    this.newWordClock(this.newWordClock()-num);
-    //this.progressBarWidth(this.progressBarWidth() - ... );
-    console.log(this.progressBarWidth());
+    this.progressBarWidth(this.progressBarWidth()+num*BAR_MULTIPLIER);
+    this.setProgressBarColor(this.gameClock());
   },
   checkGameOver: function(){
-    //console.log(this.gameClock());
-    if(this.gameClock()<1){
-      return true;
-    }
+    if(this.gameClock() < 1) return true;
     return false;
   },
   addPoints: function(pts){
     this.points(this.points()+pts);
+  },
+  setProgressBarColor: function(time){
+    console.log('setProgressBarColor time: '+time);
+    if(time <= 5) {
+      return this.progressBarColor('red');
+    } else if(time <= 10) {
+      return this.progressBarColor('orange');
+    } else if(time < 25) {
+      return this.progressBarColor(BAR_START_COLOR);
+    } else if(time < 100) {
+      return this.progressBarColor('blue');
+    } else {
+      return this.progressBarColor('purple');
+    }
   }
 
 
@@ -155,7 +156,7 @@ $(document).ready(function() {
   // another loop for the game timer functions
   var timerRate = 1000; // one second
   var timerLoop = function() {
-    wvm.subtractTime(1);
+    wvm.addTime(0-1);
     gameOver = wvm.checkGameOver();
     if(gameOver){
       endGame();
@@ -179,6 +180,7 @@ $(document).ready(function() {
     wvm.correctWords([]);
     wvm.correctWordsFull([]);
     wvm.points(0);
+    wvm.progressBarWidth(CLOCK_START * BAR_MULTIPLIER);
 
     // observable timers
     wvm.gameClock(CLOCK_START);
