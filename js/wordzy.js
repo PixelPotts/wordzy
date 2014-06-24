@@ -36,25 +36,44 @@ $.extend(WordzyViewModel.prototype,{
     // observable timers
     this.gameClock = ko.observable(CLOCK_START);
     this.newWordClock = ko.observable(NEW_LETTERS_CLOCK);
-    debugger;
   },
   pickLetters: function(num){
-    letters = _(Alphabet).sample(num);
+    return this.pickLettersDistributed(num);
+    var letters = _(Alphabet).sample(num);
     var numVowels = _.intersection( Vowels, letters ).length;
-    if(numVowels < MIN_VOWELS) this.pickLetters(num);
+    if(numVowels < MIN_VOWELS) return this.pickLetters(num);
     return letters;
+  },
+  pickLettersDistributed: function(num){
+    var letters = [];
+    while(letters.length < num){
+      var sum = 0;
+      _.each(AlphaDist, function(weight, letter){
+        console.log('weight: '+weight+', letter: '+letter);
+        sum += weight;
+        console.log('random: '+_.random(1,sum));
+        if(_.random(1,sum) < weight){
+          console.log('chosen: '+letter);
+          if( ! _.contains(letters, letter) && letters.length < num){
+            letters.push(letter);
+          }
+        }
+      });
+    }
+    return _.shuffle(letters);
   },
   checkChangeLetters: function(spaceBar){
     if(this.newWordClock() < 1){
       $('#guess-input').val(null); // clear input state so user doesn't have to backspace
-      this.letters(this.pickLetters(7));
+      this.letters(this.pickLetters(NUM_LETTERS));
       this.newWordClock(NEW_LETTERS_CLOCK);
       return true;
     }
 
     // user can press the spacebar to add time, at any point
     if(spaceBar){
-      this.letters(this.pickLetters(7));
+      this.letters(this.pickLetters(NUM_LETTERS));
+      this.newWordClock(NEW_LETTERS_CLOCK);
       this.addTime(0-1);
     }
     return false;
@@ -128,7 +147,7 @@ $(document).ready(function() {
 
   var framerate = TIME_PER_TURN;
   var mainloop = function() {
-    console.log(wvm.newWordClock());
+    //console.log(wvm.newWordClock());
     wvm.checkChangeLetters(false);
   };
 
@@ -181,7 +200,7 @@ $(document).ready(function() {
     wvm.pickLetters(NUM_LETTERS);
     $('#in-game-screen').hide();
     $('#reset-screen').show();
-    $('#reset-btn').delay(1000).show();
+    $('#reset-btn').focus().select();
   }
 
   /* Miscellany */
