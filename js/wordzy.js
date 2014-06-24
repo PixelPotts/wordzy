@@ -6,7 +6,7 @@
  *
  */
 
-var CLOCK_START = 5; // master game clock starting time
+var CLOCK_START = 500; // master game clock starting time
 var NEW_LETTERS_CLOCK = 5; // new word clock starting time; also when
 var TIME_PER_TURN = 1000; //ms
 
@@ -32,6 +32,7 @@ $.extend(WordzyViewModel.prototype,{
     this.correctWords = ko.observableArray();
     this.correctWordsFull = ko.observableArray();
     this.points = ko.observable(0);
+    this.progressBarWidth = ko.observable('15px');
 
     // observable timers
     this.gameClock = ko.observable(CLOCK_START);
@@ -49,11 +50,8 @@ $.extend(WordzyViewModel.prototype,{
     while(letters.length < num){
       var sum = 0;
       _.each(AlphaDist, function(weight, letter){
-        console.log('weight: '+weight+', letter: '+letter);
         sum += weight;
-        console.log('random: '+_.random(1,sum));
         if(_.random(1,sum) < weight){
-          console.log('chosen: '+letter);
           if( ! _.contains(letters, letter) && letters.length < num){
             letters.push(letter);
           }
@@ -113,10 +111,13 @@ $.extend(WordzyViewModel.prototype,{
   addTime: function(num){
     this.gameClock(this.gameClock()+num);
     this.newWordClock(this.newWordClock()+num);
+    //this.progressBarWidth(this.progressBarWidth() + ... );
   },
   subtractTime: function(num){
     this.gameClock(this.gameClock()-num);
     this.newWordClock(this.newWordClock()-num);
+    //this.progressBarWidth(this.progressBarWidth() - ... );
+    console.log(this.progressBarWidth());
   },
   checkGameOver: function(){
     //console.log(this.gameClock());
@@ -202,6 +203,14 @@ $(document).ready(function() {
     $('#reset-screen').show();
     $('#reset-btn').focus().select();
   }
+
+  // initial load of game
+  mainIntervalId = setInterval( mainloop, framerate );
+  timerIntervalId = setInterval( timerLoop, timerRate );
+
+  $('#start-screen, #reset-screen').hide();
+  $('#in-game-screen').show();
+  $('#guess-input').focus().select();
 
   /* Miscellany */
 

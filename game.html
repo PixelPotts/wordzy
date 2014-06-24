@@ -1,0 +1,82 @@
+<!doctype html />
+<head>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/wordzy.css">
+    <link rel="image_src" href="images/logo.png" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+    <script src="js/underscore_string.js"></script>
+    <script src="js/objects.js"></script>
+    <script src="js/trie.js"></script>
+    <script src="js/wordzy.js"></script>
+    <title>Wordzy: Impossible.</title>
+</head>
+
+<body>
+<!-- Facebook Like -->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- Google Analytics -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-188215-1', 'bryanpotts.com');
+    ga('send', 'pageview');
+
+</script>
+
+
+<p class="alert alert-info visible-xs visible-sm">Note: This game is not meant for small mobile phones.</p>
+
+<div class="container">
+
+    <h1>Wordzy: Impossible.</h1>
+
+    <div id="in-game-screen">
+        <!-- <p id="new-word-clock" style="text-align: center">New word in: <span data-bind="text: newWordClock"></span></p> -->
+        <div id="word-container">
+            <!-- ko foreach: letters -->
+            <span data-bind="text: $data"></span>
+            <!-- /ko -->
+        </div>
+
+        <div id="guess-box">
+
+            <!-- <p>Time: <span data-bind="text: gameClock"></span></p> -->
+            <div id="progressbar" data-bind="css: { width:  progressBarWidth }">&nbsp;</div>
+            <div id="guess-input-wrap">
+                <input id='guess-input' type="text">
+
+                <span id="success-stamp" class="label label-success">+1</span>
+            </div>
+            <div id="points">Points: <span data-bind="text: points"></span></div>
+            <div id="correct-words" data-bind="foreach: correctWords">
+                <div data-bind="text: $data"></div>
+            </div>
+        </div>
+    </div>
+    <div id="reset-screen" class="container well">
+        <h3>Game Over</h3>
+        <p>You scored <strong data-bind="text: points"></strong> points.</p>
+        <br>
+
+
+        <button id="reset-btn" class="btn btn-success">Try Again!</button>
+
+        <!-- <div class="fb-like" data-href="http://bryanpotts.com/wordzy/" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div> -->
+
+    </div>
+
+</div>
