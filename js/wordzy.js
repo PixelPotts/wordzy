@@ -12,10 +12,15 @@ var TIME_PER_TURN = 1000; //ms
 
 var MIN_VOWELS = 2;
 var NUM_LETTERS = 7;
-var BONUS_WORD_LEN = 4;
-var BONUS_TIME_ADD = 2;
 var PTS_FOR_WORD = 1;
 var TIME_FOR_WORD = 2;
+
+var BONUS_1_WORD_LEN = 4;
+var BONUS_1_TIME_ADD = 2;
+var BONUS_1_PTS_ADD = 2;
+var BONUS_2_WORD_LEN = 6;
+var BONUS_2_TIME_ADD = 5;
+var BONUS_2_PTS_ADD = 20;
 
 var BAR_MULTIPLIER = 3;
 var BAR_START_COLOR = '#00DD00';
@@ -80,6 +85,7 @@ $.extend(WordzyViewModel.prototype,{
 
     // Make sure the word is composed of this.letters()
     var wordLettersOverlap = _.intersection( _(word).chars(), this.letters() ).length;
+    var wordLength = _.size(word);
     if(wordLettersOverlap == word.length){
       this.correctWords.unshift(word);
       this.correctWordsFull.unshift(word);
@@ -87,9 +93,23 @@ $.extend(WordzyViewModel.prototype,{
       // only store up to n words
       if(_.size(this.correctWords()) >= NUM_LETTERS) this.correctWords.pop();
 
+
+      // TODO: Clean this points and bonus points up.. use the payout object, duh!
       // update the timers and points
       this.addTime(TIME_FOR_WORD);
       this.addPoints(PTS_FOR_WORD);
+
+      // check for bonus points
+      if(wordLength >= BONUS_1_WORD_LEN) {
+        this.addTime(BONUS_1_TIME_ADD);
+        this.addPoints(BONUS_1_PTS_ADD);
+      }
+
+      if(wordLength >= BONUS_2_WORD_LEN) {
+        this.addTime(BONUS_2_TIME_ADD);
+        this.addPoints(BONUS_2_PTS_ADD);
+      }
+
 
       // show +1
       $('#success-stamp').show();

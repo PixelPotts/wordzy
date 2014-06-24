@@ -31,7 +31,7 @@ h5 {
     padding: 100px;
 }
 #reset-btn {
-
+    margin-right: 15px;
 }
 #game-start, #btn-scared {
 
@@ -57,4 +57,6 @@ h5 {
     font-size: 5px;
     margin-left: auto;
     margin-right: auto;
+    -webkit-transition: width 1s; /* For Safari 3.1 to 6.0 */
+    transition: width 1s;
 }
