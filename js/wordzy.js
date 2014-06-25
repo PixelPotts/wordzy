@@ -6,8 +6,8 @@
  *
  */
 
-var CLOCK_START = 10; // master game clock starting time
-var NEW_LETTERS_CLOCK = 5; // new word clock starting time; also when
+var CLOCK_START = 5; // master game clock starting time
+var NEW_LETTERS_CLOCK = 100; // new word clock starting time; also when
 var TIME_PER_TURN = 1000; //ms
 
 var MIN_VOWELS = 2;
@@ -16,11 +16,17 @@ var PTS_FOR_WORD = 1;
 var TIME_FOR_WORD = 2;
 
 var BONUS_1_WORD_LEN = 4;
-var BONUS_1_TIME_ADD = 2;
-var BONUS_1_PTS_ADD = 2;
+var BONUS_1_TIME_ADD = 1;
+var BONUS_1_PTS_ADD = 3;
+
 var BONUS_2_WORD_LEN = 6;
-var BONUS_2_TIME_ADD = 5;
-var BONUS_2_PTS_ADD = 20;
+var BONUS_2_TIME_ADD = 1;
+var BONUS_2_PTS_ADD = 22;
+
+var BONUS_3_WORD_LEN = 7;
+var BONUS_3_TIME_ADD = 2;
+var BONUS_3_PTS_ADD = 75;
+
 
 var BAR_MULTIPLIER = 3;
 var BAR_START_COLOR = '#00DD00';
@@ -41,7 +47,7 @@ $.extend(WordzyViewModel.prototype,{
     this.correctWordsFull = ko.observableArray();
     this.points = ko.observable(0);
     this.progressBarWidth = ko.observable(CLOCK_START * BAR_MULTIPLIER);
-    this.progressBarColor = ko.observable(BAR_START_COLOR);
+    this.progressBarColor = ko.observable('red');
 
     // observable timers
     this.gameClock = ko.observable(CLOCK_START);
@@ -56,7 +62,7 @@ $.extend(WordzyViewModel.prototype,{
   },
   pickLettersDistributed: function(num){
     var word = _(SevenLetterWords).sample(1);
-    console.log(word);
+    console.log('==== New base word: '+word+' =====');
     var letters = word[0].split("");
     return _.shuffle(letters);
   },
@@ -78,15 +84,23 @@ $.extend(WordzyViewModel.prototype,{
   },
   attemptWord: function(word){
 
+    console.log('checking word: '+word);
+
     // The obvious failure conditions
     if(_.contains(this.correctWordsFull(),word)) return false; // skip words already found
     if(_.size(word)===0) return false; // skip empty
     if( ! wordTrie.lookup(word)) return false; // skip non-real words
 
+    console.log('validated word: '+word);
+
     // Make sure the word is composed of this.letters()
-    var wordLettersOverlap = _.intersection( _(word).chars(), this.letters() ).length;
+    var wordLettersOverlap = _.difference( _(word).chars(), this.letters() ).length;
     var wordLength = _.size(word);
-    if(wordLettersOverlap == word.length){
+
+    console.log('size of word: '+wordLength);
+    console.log('overlap: '+wordLettersOverlap);
+
+    if(wordLettersOverlap === 0){
       this.correctWords.unshift(word);
       this.correctWordsFull.unshift(word);
 
@@ -108,6 +122,11 @@ $.extend(WordzyViewModel.prototype,{
       if(wordLength >= BONUS_2_WORD_LEN) {
         this.addTime(BONUS_2_TIME_ADD);
         this.addPoints(BONUS_2_PTS_ADD);
+      }
+
+      if(wordLength >= BONUS_3_WORD_LEN) {
+        this.addTime(BONUS_3_TIME_ADD);
+        this.addPoints(BONUS_3_PTS_ADD);
       }
 
 
@@ -137,7 +156,7 @@ $.extend(WordzyViewModel.prototype,{
     this.points(this.points()+pts);
   },
   setProgressBarColor: function(time){
-    console.log('setProgressBarColor time: '+time);
+    //console.log('setProgressBarColor time: '+time);
     if(time <= 5) {
       return this.progressBarColor('red');
     } else if(time <= 10) {
